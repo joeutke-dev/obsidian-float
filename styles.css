@@ -1,0 +1,14 @@
+/* Float on Top Plugin Styles */
+
+/* Ribbon icon active state — tinted when floating is on */
+.float-on-top-active {
+  color: var(--color-accent) !important;
+}
+
+/* Opacity % label next to the slider */
+.float-on-top-slider-value {
+  margin-left: 10px;
+  min-width: 40px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}

@@ -1,0 +1,10 @@
+{
+  "id": "float-on-top",
+  "name": "Float on Top",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Keep Obsidian always on top with adjustable translucency.",
+  "author": "You",
+  "authorUrl": "",
+  "isDesktopOnly": true
+}
