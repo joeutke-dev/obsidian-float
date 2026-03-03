@@ -98,24 +98,25 @@ var FloatOnTopPlugin = class extends import_obsidian.Plugin {
     if (!win)
       return;
     win.setAlwaysOnTop(this.settings.alwaysOnTop);
-    win.setOpacity(this.settings.opacity);
+    win.setOpacity(this.settings.alwaysOnTop ? this.settings.opacity : 1);
   }
   toggleAlwaysOnTop() {
     this.settings.alwaysOnTop = !this.settings.alwaysOnTop;
     const win = getWindow();
     if (win) {
       win.setAlwaysOnTop(this.settings.alwaysOnTop);
+      win.setOpacity(this.settings.alwaysOnTop ? this.settings.opacity : 1);
     }
     this.updateRibbonIcon();
     this.saveSettings();
     new import_obsidian.Notice(
-      this.settings.alwaysOnTop ? "Obsidian is now floating on top" : "Obsidian is no longer floating on top"
+      this.settings.alwaysOnTop ? `Floating on top (${Math.round(this.settings.opacity * 100)}% opacity)` : "No longer floating on top"
     );
   }
   setOpacity(value) {
     this.settings.opacity = value;
     const win = getWindow();
-    if (win) {
+    if (win && this.settings.alwaysOnTop) {
       win.setOpacity(value);
     }
     this.saveSettings();
@@ -152,17 +153,16 @@ var FloatOnTopSettingTab = class extends import_obsidian.PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
     containerEl.createEl("h2", { text: "Float on Top" });
-    new import_obsidian.Setting(containerEl).setName("Always on top").setDesc("Keep Obsidian window above all other windows.").addToggle(
-      (toggle) => toggle.setValue(this.plugin.settings.alwaysOnTop).onChange(async (value) => {
-        this.plugin.settings.alwaysOnTop = value;
-        const win = getWindow();
-        if (win)
-          win.setAlwaysOnTop(value);
-        this.plugin.updateRibbonIcon();
-        await this.plugin.saveSettings();
+    new import_obsidian.Setting(containerEl).setName("Always on top").setDesc("Keep window above all other windows. Also controls translucency.").addToggle(
+      (toggle) => toggle.setValue(this.plugin.settings.alwaysOnTop).onChange(async () => {
+        this.plugin.toggleAlwaysOnTop();
       })
     );
     containerEl.createEl("h3", { text: "Translucency" });
+    containerEl.createEl("p", {
+      text: "Sets the opacity applied when floating is active. Changes preview immediately if currently pinned.",
+      cls: "setting-item-description"
+    });
     new import_obsidian.Setting(containerEl).setName("Opacity preset").setDesc("Quick-select a common opacity level.").addDropdown((dropdown) => {
       Object.entries(OPACITY_PRESETS).forEach(([label, value]) => {
         dropdown.addOption(String(value), label);
